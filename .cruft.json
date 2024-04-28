@@ -1,0 +1,30 @@
+{
+  "template": "https://github.com/statisticsnorway/ssb-pypitemplate.git",
+  "commit": "f7f5ee76f498f10dd72f7f263516aeaff20b0b3a",
+  "checkout": "2024.4.9",
+  "context": {
+    "cookiecutter": {
+      "project_name": "miakosections",
+      "package_name": "miakosections",
+      "friendly_name": "Miakosections",
+      "copyright_owner": "Daniel Beranek",
+      "copyright_year": "2024",
+      "author": "Daniel Beranek",
+      "email": "daniel.beraanek@gmail.com",
+      "github_organization": "DanBeranek",
+      "version": "0.0.0",
+      "license": "MIT",
+      "development_status": "Development Status :: 2 - Pre-Alpha",
+      "code_quality_level": "Medium",
+      "_copy_without_render": [
+        "*.rst_t"
+      ],
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_template": "https://github.com/statisticsnorway/ssb-pypitemplate.git"
+    }
+  },
+  "directory": null
+}
