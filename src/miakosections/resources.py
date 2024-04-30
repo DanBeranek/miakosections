@@ -1,16 +1,31 @@
-HEIGHT_SHORT = 175.0  # height (mm) of POT beams up to a length of 6.25 m
-HEIGHT_LONG = 230.0  # height (mmú of POT beam from length 6.50 m
-WIDTH = 160.0  # width (mm) of POT
-HEIGHT_PRECAST = 60.0  # height (mm) of block
-CERAMIC_COVER_WIDTH = 15.0  # width (mm) of ceramic cover
+from typing import TypedDict
+
+
+class POTDict(TypedDict):
+    length: float
+    width: float
+    height: float
+    ceramic_cover_width: float
+    height_with_rebar: float
+    d_top: float
+    d_w: float
+    d_bottom_sides: float
+    d_bottom_middle: float | None
+
+
+HEIGHT_SHORT: float = 175.0  # height (mm) of POT beams up to a length of 6.25 m
+HEIGHT_LONG: float = 230.0  # height (mmú of POT beam from length 6.50 m
+WIDTH: float = 160.0  # width (mm) of POT
+HEIGHT_PRECAST: float = 60.0  # height (mm) of block
+CERAMIC_COVER_WIDTH: float = 15.0  # width (mm) of ceramic cover
 
 # REINFORCEMENT
-D_TOP = 8.0  # diameter (mm) of upper reinforcement
-D_W_SHORT = 5.0  # diameter (mm) of shear reinforcement for short POT beams up to a length of 6.25 m
-D_W_LONG = 6.0  # diameter (mm) of shear reinforcement for short POT beam from length 6.50 m
+D_TOP: float = 8.0  # diameter (mm) of upper reinforcement
+D_W_SHORT: float = 5.0  # diameter (mm) of shear reinforcement for short POT beams up to a length of 6.25 m
+D_W_LONG: float = 6.0  # diameter (mm) of shear reinforcement for short POT beam from length 6.50 m
 
 # POT BEAMS
-POT_BEAMS = {
+POT_BEAMS: dict[str, POTDict] = {
     "POT 175": {
         "length": 1750.0,
         "width": WIDTH,

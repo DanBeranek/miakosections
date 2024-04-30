@@ -3,22 +3,19 @@ from __future__ import annotations
 import math
 
 import numpy as np
-
-from sectionproperties.pre.library import rectangular_section
-from concreteproperties.pre import add_bar_rectangular_array, add_bar
-from concreteproperties import ConcreteSection
-
 from concreteproperties import Concrete
-from concreteproperties import RectangularStressBlock
+from concreteproperties import ConcreteSection
 from concreteproperties import EurocodeNonLinear
-from concreteproperties import SteelElasticPlastic
-
+from concreteproperties import RectangularStressBlock
 from concreteproperties import SteelBar
+from concreteproperties import SteelElasticPlastic
+from concreteproperties.pre import add_bar
+from concreteproperties.pre import add_bar_rectangular_array
+from sectionproperties.pre.library import rectangular_section
 
-from miakosections.helpers import POTBeam
 from miakosections.helpers import MiakoBlock
+from miakosections.helpers import POTBeam
 from miakosections.helpers import get_bars_positions
-
 
 PRECAST_CONCRETE = Concrete(
     name="C25/30",
@@ -38,7 +35,7 @@ PRECAST_CONCRETE = Concrete(
         ultimate_strain=0.0035,
     ),
     flexural_tensile_strength=3.4,
-    colour='darkgrey',
+    colour="darkgrey",
 )
 
 INSITU_CONCRETE = Concrete(
@@ -59,7 +56,7 @@ INSITU_CONCRETE = Concrete(
         ultimate_strain=0.0035,
     ),
     flexural_tensile_strength=3.4,
-    colour='lightgrey',
+    colour="lightgrey",
 )
 
 STEEL = SteelBar(
@@ -67,7 +64,7 @@ STEEL = SteelBar(
     density=7850.0,
     stress_strain_profile=SteelElasticPlastic(
         yield_strength=500.0,
-        elastic_modulus=200.e3,
+        elastic_modulus=200.0e3,
         fracture_strain=0.1,
     ),
     colour="blue",
@@ -93,8 +90,7 @@ def create_miako_section(
     top_reinforcement_diameter: float = 10.0,
     top_reinforcement_number: int = 0,
 ) -> ConcreteSection:
-    """
-    Create a Miako section with a POT beam and Miako blocks.
+    """Create a Miako section with a POT beam and Miako blocks.
 
     :param pot_label: Label of the POT beam.
     :param n_pots: Number of POT beams.
@@ -131,16 +127,14 @@ def create_miako_section(
 
     miako_left = (
         MiakoBlock(height=miako_height, pot_distance=pot_distances[0])
-        .geometry
-        .mirror_section(axis="y")
+        .geometry.mirror_section(axis="y")
         .align_to(other=rec, on="bottom", inner=True)
         .align_to(other=rec, on="left", inner=True)
     )
 
     miako_right = (
         MiakoBlock(height=miako_height, pot_distance=pot_distances[1])
-        .geometry
-        .align_to(other=rec, on="bottom", inner=True)
+        .geometry.align_to(other=rec, on="bottom", inner=True)
         .align_to(other=rec, on="right", inner=True)
     )
 
@@ -148,7 +142,9 @@ def create_miako_section(
 
     if consider_top_reinforcement:
         if wwf_steel:
-            top_reinforcement_diameter = top_reinforcement_diameter if top_reinforcement_steel else 0.0
+            top_reinforcement_diameter = (
+                top_reinforcement_diameter if top_reinforcement_steel else 0.0
+            )
 
             # round down number of wwf bars that fit in the section
             n_x = int(math.floor(b_eff / wwf_spacing))
@@ -156,19 +152,22 @@ def create_miako_section(
             # calculate center position of the first wwf bar
             anchor = (
                 (b_eff - (n_x - 1) * wwf_spacing) / 2,
-                section_height - concrete_cover - top_reinforcement_diameter + wwf_diameter / 2
+                section_height
+                - concrete_cover
+                - top_reinforcement_diameter
+                + wwf_diameter / 2,
             )
 
             # add bars as rectangular array
             rec = add_bar_rectangular_array(
                 geometry=rec,
-                area=math.pi*wwf_diameter**2/4,
+                area=math.pi * wwf_diameter**2 / 4,
                 material=wwf_steel,
                 n_x=n_x,
                 x_s=wwf_spacing,
                 n_y=1,
                 y_s=69.0,
-                anchor=anchor
+                anchor=anchor,
             )
 
         if top_reinforcement_steel:
@@ -178,13 +177,17 @@ def create_miako_section(
 
             if wwf_steel:
                 # get the wwf x-positions:
-                x_wwf = np.arange(anchor[0], anchor[0] + n_x * wwf_spacing, wwf_spacing).tolist()
+                x_wwf = np.arange(
+                    anchor[0], anchor[0] + n_x * wwf_spacing, wwf_spacing
+                ).tolist()
 
-                extension_45_deg = slab_height - concrete_cover - top_reinforcement_diameter
+                extension_45_deg = (
+                    slab_height - concrete_cover - top_reinforcement_diameter
+                )
                 # calculate acceptable interval for the top reinforcement
                 tr_x_interval = [
                     pot_distances[0] / 2 - 50 - extension_45_deg,
-                    b_eff - pot_distances[1] / 2 + 50 + extension_45_deg
+                    b_eff - pot_distances[1] / 2 + 50 + extension_45_deg,
                 ]
 
                 x_pos = get_bars_positions(
@@ -192,39 +195,43 @@ def create_miako_section(
                     wwf_diameter=wwf_diameter,
                     tr_number=top_reinforcement_number,
                     tr_diameter=top_reinforcement_diameter,
-                    tr_interval=tr_x_interval
+                    tr_interval=tr_x_interval,
                 )
 
             else:
                 x_pos = np.linspace(
                     start=pot_distances[0] / 2 - concrete_cover,
                     stop=pot_distances[0] / 2 + (n_pots - 1) * 160 + concrete_cover,
-                    num=top_reinforcement_number
-                )
+                    num=top_reinforcement_number,
+                ).tolist()
 
             for x in x_pos:
                 rec = add_bar(
                     geometry=rec,
-                    area=math.pi*top_reinforcement_diameter**2/4,
+                    area=math.pi * top_reinforcement_diameter**2 / 4,
                     material=top_reinforcement_steel,
                     x=x,
-                    y=section_height - concrete_cover - top_reinforcement_diameter / 2
+                    y=section_height - concrete_cover - top_reinforcement_diameter / 2,
                 )
 
     geom = rec - miako_left - miako_right - rec2
 
-    pot_section = (POTBeam(
-        label=pot_label,
-        concrete_material=precast_concrete,
-        rebar_material=precast_steel,
-        consider_upper_rebar=consider_top_pot_reinforcement
-    ).geometry
-                   .align_to(other=geom, on="bottom", inner=True)
-                   .shift_section(y_offset=-45))
+    pot_section = (
+        POTBeam(
+            label=pot_label,
+            concrete_material=precast_concrete,
+            rebar_material=precast_steel,
+            consider_upper_rebar=consider_top_pot_reinforcement,
+        )
+        .geometry.align_to(other=geom, on="bottom", inner=True)
+        .shift_section(y_offset=-45)
+    )
 
     for n in range(n_pots):
         shift_x = pot_distances[0] / 2 - 130 / 2 + n * 160.0
         shifted_pot = pot_section.shift_section(x_offset=shift_x)
-        geom = (geom - shifted_pot) + shifted_pot  # Subtract and add the POT beam section
+        geom = (
+            geom - shifted_pot
+        ) + shifted_pot  # Subtract and add the POT beam section
 
     return ConcreteSection(geometry=geom)
