@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "miakosections"
-version = "0.0.0"
+version = "0.1.0"
 description = "miakosections"
 authors = ["Daniel Beranek <daniel.beraanek@gmail.com>"]
 license = "MIT"
