@@ -16,6 +16,7 @@ Changelog = "https://github.com/DanBeranek/miakosections/releases"
 [tool.poetry.dependencies]
 python = ">=3.10.0, <3.12"
 click = ">=8.0.1"
+numba = "^0.59.1"
 concreteproperties = "^0.6.2"
 
 [tool.poetry.group.dev.dependencies]
