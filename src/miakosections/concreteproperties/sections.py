@@ -13,9 +13,10 @@ from concreteproperties.pre import add_bar
 from concreteproperties.pre import add_bar_rectangular_array
 from sectionproperties.pre.library import rectangular_section
 
-from miakosections.helpers import MiakoBlock
-from miakosections.helpers import POTBeam
-from miakosections.helpers import get_bars_positions
+from miakosections.concreteproperties.helpers import MiakoBlock
+from miakosections.concreteproperties.helpers import POTBeam
+from miakosections.concreteproperties.helpers import get_bars_positions
+
 
 PRECAST_CONCRETE = Concrete(
     name="C25/30",
@@ -152,10 +153,15 @@ def create_miako_section(
             # calculate center position of the first wwf bar
             anchor = (
                 (b_eff - (n_x - 1) * wwf_spacing) / 2,
-                section_height
-                - concrete_cover
-                - top_reinforcement_diameter
-                + wwf_diameter / 2,
+                max(
+                    section_height
+                    - concrete_cover
+                    - top_reinforcement_diameter
+                    + wwf_diameter / 2,
+                    section_height
+                    - concrete_cover
+                    - wwf_diameter / 2,
+                )
             )
 
             # add bars as rectangular array
